@@ -1,0 +1,9 @@
+MobileSecrets:
+  hashKeys:
+    - "a"
+    - "b"
+    - "c"
+  secrets:
+    googleMaps: "123123123"
+    firebase: "asdasdasd"
+    amazon: "asd123asd123"
