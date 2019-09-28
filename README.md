@@ -1,5 +1,4 @@
 # Mobile secrets
-Mobile Secrets<br/>
 *Handle mobile secrets the secure way with ease*
 
 Usage:<br/>
