@@ -6,7 +6,8 @@ module MobileSecrets
   class SecretsHandler
 
     def export_secrets path
-      config = YAML.load(decrypt_secrets())["MobileSecrets"]
+      decrypted_secrets = decrypt_secrets()
+      config = YAML.load(decrypted_secrets)["MobileSecrets"]
       hash_key = config["hashKey"]
       obfuscator = MobileSecrets::Obfuscator.new hash_key
 
@@ -30,24 +31,12 @@ module MobileSecrets
       File.open(file, "w") { |f| f.puts swift_secrets }
     end
 
-    def decrypt
-      decrypted_secrets = decrypt_secrets()
-      secrets_dict = extract_secrets_from(decrypted_secrets)
-      inject_into_swift(secrets_dict)
-    end
-
-    def dry_run *nil_secrets
-      secrets_dict = {}
-      nil_secrets.map { |s| secrets_dict[s] = "nil"  }
-      inject_into_swift secrets_dict
-    end
-
     private
 
     def decrypt_secrets
-      gpg = Dotgpg::Dir.new "./"
+      gpg = Dotgpg::Dir.new "#{Dir.pwd}/"
       output = StringIO.new
-      gpg.decrypt "secrets.gpg", output
+      gpg.decrypt "#{Dir.pwd}/secrets.gpg", output
       output.string
     end
 
