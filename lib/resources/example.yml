@@ -1,9 +1,7 @@
 MobileSecrets:
-  hashKeys:
-    - "a"
-    - "b"
-    - "c"
-  secrets:
+  hashKey: "KokoBelloKoko" # Key that will be used to hashed the secret values.
+  language: "Swift" # Swift is currently only supported language, Kotlin is coming soon.
+  secrets: # Key-value dictionary for secrets. The key is then referenced in the code to get the secret.
     googleMaps: "123123123"
     firebase: "asdasdasd"
     amazon: "asd123asd123"

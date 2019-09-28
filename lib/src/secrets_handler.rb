@@ -1,4 +1,6 @@
 require "dotgpg"
+require "yaml"
+require_relative '../src/obfuscator'
 
 module MobileSecrets
   class SecretsHandler
@@ -7,8 +9,29 @@ module MobileSecrets
       @secret_output_path = "./" #Path to your secret sturct in the project
     end
 
-    def create path, configuration
+    def obfuscate_to_swift
+      config = YAML.load(decrypt_secrets())["MobileSecrets"]
+      hash_key = config["hashKey"]
+      obfuscator = MobileSecrets::Obfuscator.new hash_key
 
+      bytes = [hash_key.bytes]
+      secrets_dict = config["secrets"]
+
+      secrets_dict.each do |key, value|
+        encrypted = obfuscator.obfuscate(value)
+        bytes << key.bytes << encrypted.bytes
+      end
+
+      inject_secrets(bytes, "secrets.swift")
+    end
+
+    def inject_secrets(secret_bytes, file)
+      template = IO.read "#{__dir__}/../resources/SecretsTemplate.swift"
+      secret_bytes = "#{secret_bytes}".gsub "],", "],\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
+      bytes_variable = "private let bytes: [[UInt8]] = #{secret_bytes}"
+      swift_secrets = template.sub "/* SECRET BYTES */", bytes_variable
+
+      File.open(file, "w") { |f| f.puts swift_secrets }
     end
 
     def decrypt

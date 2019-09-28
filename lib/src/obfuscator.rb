@@ -1,4 +1,4 @@
-module SecretsHandler
+module MobileSecrets
   class Obfuscator
 
     def initialize obfuscation_keys
