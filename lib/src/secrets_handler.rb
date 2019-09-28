@@ -6,10 +6,9 @@ module MobileSecrets
   class SecretsHandler
 
     def initialize
-      @secret_output_path = "./" #Path to your secret sturct in the project
     end
 
-    def obfuscate_to_swift
+    def export_secrets
       config = YAML.load(decrypt_secrets())["MobileSecrets"]
       hash_key = config["hashKey"]
       obfuscator = MobileSecrets::Obfuscator.new hash_key
@@ -62,13 +61,6 @@ module MobileSecrets
         secrets[keysWithsecret[0].strip] = keysWithsecret[1].strip
       end
       secrets
-    end
-
-    def inject_into_swift secrets_dict
-      content = "struct AppSecrets {\n"
-      secrets_dict.each { |key, value|  content << "\tstatic let #{key}: String? = #{value}\n" }
-      content << "}"
-      File.open("#{@secret_output_path}secrets.swift", "w") { |f| f.puts content }
     end
   end
 end
