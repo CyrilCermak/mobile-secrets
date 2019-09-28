@@ -5,10 +5,7 @@ require_relative '../src/obfuscator'
 module MobileSecrets
   class SecretsHandler
 
-    def initialize
-    end
-
-    def export_secrets
+    def export_secrets path
       config = YAML.load(decrypt_secrets())["MobileSecrets"]
       hash_key = config["hashKey"]
       obfuscator = MobileSecrets::Obfuscator.new hash_key
@@ -21,7 +18,7 @@ module MobileSecrets
         bytes << key.bytes << encrypted.bytes
       end
 
-      inject_secrets(bytes, "secrets.swift")
+      inject_secrets(bytes, "#{path}/secrets.swift")
     end
 
     def inject_secrets(secret_bytes, file)
