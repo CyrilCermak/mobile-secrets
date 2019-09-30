@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name               = "mobile-secrets"
-  s.version            = "0.0.1"
+  s.version            = "0.0.2"
 
   s.authors = ["Cyril Cermak", "Joerg Nestele"]
   s.date = %q{2019-09-27}
