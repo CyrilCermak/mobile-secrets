@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.license = "MIT"
   s.description = %q{Handle mobile secrets the secure way with ease}
   s.email = %q{cyril.cermakk@gmail.com}
-  s.files = ["Rakefile", "lib/src/obfuscator.rb", "lib/src/secrets_handler.rb", "lib/resources/example.yml", "lib/resources/SecretsTemplate.swift", "bin/mobile_secrets"]
+  s.files = ["Rakefile", "lib/src/obfuscator.rb", "lib/src/secrets_handler.rb", "lib/resources/example.yml", "lib/resources/SecretsTemplate.swift", "bin/mobile-secrets"]
   s.executables << "mobile-secrets"
   s.test_files = ["test/test_hola.rb"]
   s.add_dependency "dotgpg", "0.7.0"
