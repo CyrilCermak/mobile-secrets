@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name               = "mobile-secrets"
-  s.version            = "0.0.2"
+  s.version            = "0.0.3"
 
   s.authors = ["Cyril Cermak", "Joerg Nestele"]
   s.date = %q{2019-09-27}
@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.executables << "mobile-secrets"
   s.test_files = ["test/test_hola.rb"]
   s.add_dependency "dotgpg", "0.7.0"
-  s.homepage = %q{http://rubygems.org/gems/hola}
+  s.homepage = %q{https://github.com/CyrilCermak/mobile-secrets}
   s.require_paths = ["lib"]
   s.summary = %q{mobile-secrets tool for handling your mobile secrets}
 end
