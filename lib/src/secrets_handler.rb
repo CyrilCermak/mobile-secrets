@@ -6,8 +6,13 @@ module MobileSecrets
   class SecretsHandler
 
     def export_secrets path
-      decrypted_secrets = decrypt_secrets()
-      config = YAML.load(decrypted_secrets)["MobileSecrets"]
+      decrypted_config = decrypt_secrets()
+      bytes = process_yaml_config decrypted_config
+      inject_secrets(bytes, "#{path}/secrets.swift")
+    end
+
+    def process_yaml_config yaml_string
+      config = YAML.load(yaml_string)["MobileSecrets"]
       hash_key = config["hashKey"]
       obfuscator = MobileSecrets::Obfuscator.new hash_key
 
@@ -19,16 +24,23 @@ module MobileSecrets
         bytes << key.bytes << encrypted.bytes
       end
 
-      inject_secrets(bytes, "#{path}/secrets.swift")
+      bytes
     end
 
-    def inject_secrets(secret_bytes, file)
+    def inject_secrets secret_bytes, file
       template = IO.read "#{__dir__}/../resources/SecretsTemplate.swift"
       secret_bytes = "#{secret_bytes}".gsub "],", "],\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
       bytes_variable = "private let bytes: [[UInt8]] = #{secret_bytes}"
       swift_secrets = template.sub "/* SECRET BYTES */", bytes_variable
 
       File.open(file, "w") { |f| f.puts swift_secrets }
+    end
+
+    def encrypt output_file_path, string, gpg_path
+      gpg_path = "." unless gpg_path
+      gpg_path =  "#{Dir.pwd}/#{gpg_path}"
+      dotgpg = Dotgpg::Dir.new(gpg_path)
+      dotgpg.encrypt output_file_path, string
     end
 
     private
