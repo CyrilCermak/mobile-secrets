@@ -29,7 +29,7 @@ module MobileSecrets
 
     def inject_secrets secret_bytes, file
       template = IO.read "#{__dir__}/../resources/SecretsTemplate.swift"
-      secret_bytes = "#{secret_bytes}".gsub "],", "],\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
+      secret_bytes = "#{secret_bytes}".gsub "],", "],\n                                   " #Formating the array
       bytes_variable = "private let bytes: [[UInt8]] = #{secret_bytes}"
       swift_secrets = template.sub "/* SECRET BYTES */", bytes_variable
 
