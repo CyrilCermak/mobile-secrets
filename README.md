@@ -1,6 +1,8 @@
 # Mobile secrets
 *Handle mobile secrets the secure way with ease*
 
+Working with this plugin is described in detail here: https://medium.com/@cyrilcermak/mobile-secrets-8458ceaf4c16
+
 Usage:<br/>
 1) Create gpg first with --init-gpg "."<br/>
 2) Create a template for MobileSecrets with --create-template<br/>
