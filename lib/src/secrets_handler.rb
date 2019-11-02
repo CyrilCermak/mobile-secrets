@@ -1,14 +1,19 @@
 require "dotgpg"
 require "yaml"
+
 require_relative '../src/obfuscator'
+require_relative '../src/file_handler'
+require_relative '../src/source_renderer'
 
 module MobileSecrets
   class SecretsHandler
 
     def export_secrets path
       decrypted_config = decrypt_secrets()
-      bytes = process_yaml_config decrypted_config
-      inject_secrets(bytes, "#{path}/secrets.swift")
+      bytes, include_files = process_yaml_config decrypted_config
+
+      renderer = MobileSecrets::SourceRenderer.new "swift"
+      renderer.render_template bytes, include_files, "#{path}/secrets.swift"
     end
 
     def process_yaml_config yaml_string
@@ -24,9 +29,18 @@ module MobileSecrets
         bytes << key.bytes << encrypted.bytes
       end
 
-      bytes
+      contain_files = false
+      files = config["files"]
+      if files
+        abort("Password must be 13 characters long for files encryption.") if hash_key.length != 32
+        files.each { |f| encrypt_file hash_key, f, "#{f}.enc" }
+        contain_files = true
+      end
+
+      return bytes, contain_files
     end
 
+    # Deprecated: use renderer
     def inject_secrets secret_bytes, file
       template = IO.read "#{__dir__}/../resources/SecretsTemplate.swift"
       secret_bytes = "#{secret_bytes}".gsub "],", "],\n                                   " #Formating the array
@@ -41,6 +55,13 @@ module MobileSecrets
       gpg_path =  "#{Dir.pwd}/#{gpg_path}"
       dotgpg = Dotgpg::Dir.new(gpg_path)
       dotgpg.encrypt output_file_path, string
+    end
+
+    def encrypt_file password, file, output_file_path
+      encryptor = FileHandler.new password
+      encrypted_content = encryptor.encrypt file
+
+      File.open(output_file_path, "wb") { |f| f.write encrypted_content }
     end
 
     private

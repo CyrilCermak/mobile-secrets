@@ -60,6 +60,10 @@ module MobileSecrets
 
         file = IO.read argv_1
         MobileSecrets::SecretsHandler.new.encrypt "./secrets.gpg", file, nil
+      when "--encrypt-file"
+        file = argv_1
+        password = argv_2
+        MobileSecrets::SecretsHandler.new.encrypt_file password, file, "#{file}.enc"
       when "--usage"
         puts usage
       else
