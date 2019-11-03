@@ -10,34 +10,36 @@ module MobileSecrets
 
     def export_secrets path
       decrypted_config = decrypt_secrets()
-      bytes, include_files = process_yaml_config decrypted_config
+      file_names_bytes, secrets_bytes = process_yaml_config decrypted_config
 
       renderer = MobileSecrets::SourceRenderer.new "swift"
-      renderer.render_template bytes, include_files, "#{path}/secrets.swift"
+      renderer.render_template secrets_bytes, file_names_bytes, "#{path}/secrets.swift"
     end
 
     def process_yaml_config yaml_string
       config = YAML.load(yaml_string)["MobileSecrets"]
       hash_key = config["hashKey"]
-      obfuscator = MobileSecrets::Obfuscator.new hash_key
-
-      bytes = [hash_key.bytes]
       secrets_dict = config["secrets"]
+      files = config["files"]
+      should_include_password = config["shouldIncludePassword"]
+      secrets_bytes = should_include_password ? [hash_key.bytes] : []
+      file_names_bytes = []
+      obfuscator = MobileSecrets::Obfuscator.new hash_key
 
       secrets_dict.each do |key, value|
         encrypted = obfuscator.obfuscate(value)
-        bytes << key.bytes << encrypted.bytes
+        secrets_bytes << key.bytes << encrypted.bytes
       end
 
-      contain_files = false
-      files = config["files"]
       if files
         abort("Password must be 13 characters long for files encryption.") if hash_key.length != 32
-        files.each { |f| encrypt_file hash_key, f, "#{f}.enc" }
-        contain_files = true
+        files.each do |f|
+          encrypt_file hash_key, f, "#{f}.enc"
+          file_names_bytes << f.bytes
+        end
       end
 
-      return bytes, contain_files
+      return file_names_bytes, secrets_bytes
     end
 
     # Deprecated: use renderer
