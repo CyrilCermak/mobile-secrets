@@ -1,7 +1,18 @@
 MobileSecrets:
-  hashKey: "KokoBelloKoko" # Key that will be used to hashed the secret values.
-  language: "Swift" # Swift is currently only supported language, Kotlin is coming soon.
-  secrets: # Key-value dictionary for secrets. The key is then referenced in the code to get the secret.
+  # hashKey: Key that will be used to hash the secret values.
+  # For encrypting files the key needs to be 32 chars long as an AES standard.
+  hashKey: "KokoBelloKokoKokoBelloKokoKokoBe"
+  # shouldIncludePassword: By default the password is saved in the code as a series of bytes, however it can also
+  # be fetched from your API, saved in keychain and passed to the Secrets for improving the security.
+  shouldIncludePassword: true
+  # language: Swift is currently only supported language, Kotlin is coming soon.
+  language: "Swift"
+  # Key-value dictionary for secrets. The key is then referenced in the code to get the secret.
+  secrets:
     googleMaps: "123123123"
     firebase: "asdasdasd"
     amazon: "asd123asd123"
+  # Optional, remove files if you do not want to encrypt them
+  files:
+    - tmp.txt
+    - Info.plist
