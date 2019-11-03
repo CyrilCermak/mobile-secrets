@@ -42,16 +42,6 @@ module MobileSecrets
       return file_names_bytes, secrets_bytes
     end
 
-    # Deprecated: use renderer
-    def inject_secrets secret_bytes, file
-      template = IO.read "#{__dir__}/../resources/SecretsTemplate.swift"
-      secret_bytes = "#{secret_bytes}".gsub "],", "],\n                                   " #Formating the array
-      bytes_variable = "private let bytes: [[UInt8]] = #{secret_bytes}"
-      swift_secrets = template.sub "/* SECRET BYTES */", bytes_variable
-
-      File.open(file, "w") { |f| f.puts swift_secrets }
-    end
-
     def encrypt output_file_path, string, gpg_path
       gpg_path = "." unless gpg_path
       gpg_path =  "#{Dir.pwd}/#{gpg_path}"
