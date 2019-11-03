@@ -32,7 +32,7 @@ module MobileSecrets
       end
 
       if files
-        abort("Password must be 13 characters long for files encryption.") if hash_key.length != 32
+        abort("Password must be 32 characters long for files encryption.") if hash_key.length != 32
         files.each do |f|
           encrypt_file hash_key, f, "#{f}.enc"
           file_names_bytes << f.bytes

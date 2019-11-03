@@ -24,7 +24,7 @@ module MobileSecrets
       opt << "--create-template \t\tCreates a template yml file to configure the MobileSecrets\n"
       opt << "--import SECRETS_PATH \t\tAdds MobileSecrets to GPG secrets\n"
       opt << "--export PATH \t\t\tCreates source file with obfuscated secrets at given PATH\n"
-      opt << "--encrypt-file \t\t\tEncrypt a single file with AES\n"
+      opt << "--encrypt-file FILE PASSWORD \tEncrypt a single file with AES\n"
       opt << "--usage \t\t\tManual for using MobileSecrets.\n\n"
       opt << "Examples:\n"
       opt << "--import \"./MobileSecrets.yml\"\n"
