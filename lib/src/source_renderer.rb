@@ -20,6 +20,17 @@ module MobileSecrets
          end
       end
     end
+    
+    def render_empty_template output_file_path
+      template = File.read("#{__dir__}/../resources/SecretsSwiftEmpty.erb")
+
+      case @source_type
+      when "swift"
+        File.open(output_file_path, "w") do |file|
+           file.puts template
+         end
+      end
+    end
 
   end
 end

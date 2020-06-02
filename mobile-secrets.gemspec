@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name               = "mobile-secrets"
-  s.version            = "0.0.8"
+  s.version            = "0.0.9"
 
   s.authors = ["Cyril Cermak", "Joerg Nestele"]
   s.date = %q{2019-09-27}
@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
       "lib/src/file_handler.rb",
       "lib/resources/example.yml",
       "lib/resources/SecretsSwift.erb",
+      "lib/resources/SecretsSwiftEmpty.erb",
       "bin/mobile-secrets"]
   s.executables << 'mobile-secrets'
   # s.test_files = ["test/test_hola.rb"]

@@ -8,12 +8,13 @@ require_relative '../src/source_renderer'
 module MobileSecrets
   class SecretsHandler
 
-    def export_secrets path
-      decrypted_config = decrypt_secrets()
+    def export_secrets path, from_encrypted_file_name
+      decrypted_config = decrypt_secrets(from_encrypted_file_name)
       file_names_bytes, secrets_bytes = process_yaml_config decrypted_config
 
       renderer = MobileSecrets::SourceRenderer.new "swift"
       renderer.render_template secrets_bytes, file_names_bytes, "#{path}/secrets.swift"
+      decrypted_config
     end
 
     def process_yaml_config yaml_string
@@ -51,6 +52,7 @@ module MobileSecrets
 
     def encrypt_file password, file, output_file_path
       encryptor = FileHandler.new password
+      abort("Configuration contains file #{file} that cannot be found! Please check your mobile-secrets configuration or add the file into directory.") unless File.exist? file
       encrypted_content = encryptor.encrypt file
 
       File.open(output_file_path, "wb") { |f| f.write encrypted_content }
@@ -58,10 +60,10 @@ module MobileSecrets
 
     private
 
-    def decrypt_secrets
-      gpg = Dotgpg::Dir.new "#{Dir.pwd}/"
+    def decrypt_secrets encrypted_file_name
+      gpg = Dotgpg::Dir.closest encrypted_file_name
       output = StringIO.new
-      gpg.decrypt "#{Dir.pwd}/secrets.gpg", output
+      gpg.decrypt "#{Dir.pwd}/#{encrypted_file_name}", output
       output.string
     end
 

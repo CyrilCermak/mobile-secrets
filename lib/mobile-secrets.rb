@@ -20,15 +20,16 @@ module MobileSecrets
 
     def options
       opt = ""
-      opt << "--init-gpg PATH \t\tInitialize GPG in the directory.\n"
-      opt << "--create-template \t\tCreates a template yml file to configure the MobileSecrets\n"
-      opt << "--import SECRETS_PATH \t\tAdds MobileSecrets to GPG secrets\n"
-      opt << "--export PATH \t\t\tCreates source file with obfuscated secrets at given PATH\n"
-      opt << "--encrypt-file FILE PASSWORD \tEncrypt a single file with AES\n"
-      opt << "--usage \t\t\tManual for using MobileSecrets.\n\n"
+      opt << "--init-gpg PATH \t\t\tInitialize GPG in the directory.\n"
+      opt << "--create-template \t\t\tCreates a template yml file to configure the MobileSecrets\n"
+      opt << "--import SECRETS_PATH \t\t\tAdds MobileSecrets to GPG secrets\n"
+      opt << "--export PATH opt: ENCRYPTED_FILE_PATH \tCreates source file with obfuscated secrets at given PATH\n"
+      opt << "--encrypt-file FILE PASSWORD \t\tEncrypt a single file with AES\n"
+      opt << "--empty PATH \t\t\t\tGenerates a Secrets file without any data in it\n"
+      opt << "--usage \t\t\t\tManual for using MobileSecrets.\n\n"
       opt << "Examples:\n"
       opt << "--import \"./MobileSecrets.yml\"\n"
-      opt << "--export \"./Project/Src\"\n"
+      opt << "--export \"./Project/Src\\n"
       opt << "--init-gpg \".\""
       opt
     end
@@ -49,22 +50,31 @@ module MobileSecrets
         FileUtils.cp("#{__dir__}/../lib/resources/example.yml", "#{Dir.pwd}#{File::SEPARATOR}MobileSecrets.yml")
       when "--export"
         return print_options if argv_1 == nil
+        encrypted_file_path = argv_2 ||= "secrets.gpg"
 
         secrets_handler = MobileSecrets::SecretsHandler.new
-        secrets_handler.export_secrets argv_1
+        secrets_handler.export_secrets argv_1, argv_2
       when "--init-gpg"
         return print_options if argv_1 == nil
 
         Dotgpg::Cli.new.init(argv_1)
       when "--import"
         return print_options if argv_1 == nil
-
+        gpg_file = argv_2 ||= "secrets.gpg"
         file = IO.read argv_1
-        MobileSecrets::SecretsHandler.new.encrypt "./secrets.gpg", file, nil
+        MobileSecrets::SecretsHandler.new.encrypt gpg_file, file, nil
       when "--encrypt-file"
         file = argv_1
         password = argv_2
         MobileSecrets::SecretsHandler.new.encrypt_file password, file, "#{file}.enc"
+      when "--empty"
+        return print_options if argv_1 == nil
+        file_path = argv_1
+        
+        MobileSecrets::SourceRenderer.new("swift").render_empty_template "#{file_path}/secrets.swift"
+      when "--edit"
+        return print_options if argv_1 == nil
+        exec("dotgpg edit #{argv_1}")
       when "--usage"
         puts usage
       else
