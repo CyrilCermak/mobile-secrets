@@ -39,7 +39,7 @@ module MobileSecrets
 
       secrets_dict.each do |key, value|
         if algorithm == "AES-GCM"
-          secrets_bytes << key.bytes << encrypt_aes_gcm(value.to_s, hash_key)
+          secrets_bytes << key.bytes << encrypt_aes_gcm(value.to_s, hash_key, key)
         else
           encrypted = obfuscator.obfuscate(value.to_s)
           secrets_bytes << key.bytes << encrypted.bytes
@@ -74,12 +74,17 @@ module MobileSecrets
 
     private
 
-    # Encrypts a secret value with AES-256-GCM.
+    # Encrypts a secret value with AES-256-GCM using a deterministic IV.
+    # The IV is derived via HMAC-SHA256(key, "secret_name:value") truncated to 12 bytes,
+    # so identical inputs always produce identical ciphertext while ensuring that
+    # changing either the value or the secret name produces a different IV — preventing
+    # nonce reuse, which would be catastrophic for GCM authentication.
     # Returns bytes laid out as: IV(12) + AuthTag(16) + Ciphertext(N)
-    def encrypt_aes_gcm(value, key_string)
+    def encrypt_aes_gcm(value, key_string, secret_name)
+      iv = OpenSSL::HMAC.digest('SHA256', key_string, "#{secret_name}:#{value}")[0, 12]
       cipher = OpenSSL::Cipher::AES256.new(:GCM)
       cipher.encrypt
-      iv = cipher.random_iv
+      cipher.iv = iv
       cipher.key = key_string
       cipher.auth_data = ""
       ciphertext = cipher.update(value) + cipher.final

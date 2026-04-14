@@ -104,10 +104,29 @@ class SecretsHandlerTest < Minitest::Test
     assert_equal expected_len, secrets[2].length
   end
 
-  def test_aes_gcm_produces_different_ciphertext_on_each_call
+  def test_aes_gcm_produces_same_ciphertext_on_repeated_calls
     _, secrets1, _ = @handler.process_yaml_config(AES_GCM_YAML)
     _, secrets2, _ = @handler.process_yaml_config(AES_GCM_YAML)
-    # Random IV means the encrypted bytes must differ across calls
+    # Deterministic IV means the same input always produces the same encrypted bytes
+    assert_equal secrets1[2], secrets2[2]
+  end
+
+  def test_aes_gcm_produces_different_ciphertext_for_different_secret_names
+    yaml_a = AES_GCM_YAML.sub('googleMaps', 'nameA')
+    yaml_b = AES_GCM_YAML.sub('googleMaps', 'nameB')
+    _, secrets_a, _ = @handler.process_yaml_config(yaml_a)
+    _, secrets_b, _ = @handler.process_yaml_config(yaml_b)
+    # Different secret names derive different IVs — no nonce reuse
+    refute_equal secrets_a[1], secrets_b[1]  # different key name bytes
+    refute_equal secrets_a[2], secrets_b[2]  # different ciphertext
+  end
+
+  def test_aes_gcm_produces_different_ciphertext_for_different_values
+    yaml_v1 = AES_GCM_YAML.sub('123-maps-key', 'value-v1')
+    yaml_v2 = AES_GCM_YAML.sub('123-maps-key', 'value-v2')
+    _, secrets1, _ = @handler.process_yaml_config(yaml_v1)
+    _, secrets2, _ = @handler.process_yaml_config(yaml_v2)
+    # Different values derive different IVs — no nonce reuse on secret rotation
     refute_equal secrets1[2], secrets2[2]
   end
 

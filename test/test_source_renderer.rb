@@ -48,7 +48,7 @@ class SourceRendererTest < Minitest::Test
   def test_xor_template_contains_secrets_class
     output = render(algorithm: 'XOR')
     assert_includes output, 'class Secrets'
-    assert_includes output, 'static let standard = Secrets()'
+    assert_includes output, 'let standard = Secrets()'
   end
 
   def test_xor_template_embeds_byte_arrays

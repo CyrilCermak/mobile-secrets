@@ -55,7 +55,7 @@ class E2eTest < Minitest::Test
 
   # ── AES-GCM: each export produces different ciphertext (random IV) but same decrypted output
 
-  def test_aes_gcm_produces_different_swift_source_on_each_export_but_same_runtime_values
+  def test_aes_gcm_produces_identical_swift_source_on_repeated_exports
     output1 = run_pipeline(yaml: AES_GCM_YAML, algorithm: 'AES-GCM', keys: KNOWN_SECRETS.keys,
                            swift_name: 'secrets1.swift', binary_name: 'bin1')
     output2 = run_pipeline(yaml: AES_GCM_YAML, algorithm: 'AES-GCM', keys: KNOWN_SECRETS.keys,
@@ -67,10 +67,10 @@ class E2eTest < Minitest::Test
       assert_includes output2, "#{key}=#{expected}"
     end
 
-    # But the Swift sources contain different byte literals due to random IV
+    # Sources are identical — deterministic IV means reproducible builds
     src1 = File.read(File.join(@tmpdir, 'secrets1.swift'))
     src2 = File.read(File.join(@tmpdir, 'secrets2.swift'))
-    refute_equal src1, src2, 'AES-GCM sources should differ across exports (random IV)'
+    assert_equal src1, src2, 'AES-GCM sources should be identical across exports (deterministic IV)'
   end
 
   # ── XOR + password supplied at runtime (shouldIncludePassword: false) ─────
