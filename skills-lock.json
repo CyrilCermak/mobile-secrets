@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "security-review": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "computedHash": "9b1791054c648b84ca424fc1342dede2e04759dc73436bb91d21675d5a4c13ea"
+    }
+  }
+}
