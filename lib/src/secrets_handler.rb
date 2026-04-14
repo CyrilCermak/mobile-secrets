@@ -1,6 +1,7 @@
 require "dotgpg"
 require "yaml"
 require "openssl"
+require "stringio"
 
 require_relative '../src/obfuscator'
 require_relative '../src/file_handler'
