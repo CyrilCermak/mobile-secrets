@@ -8,7 +8,7 @@ module MobileSecrets
       @source_type = source_type.downcase
     end
 
-    def render_template secrets_bytes, file_names_bytes, output_file_path
+    def render_template secrets_bytes, file_names_bytes, output_file_path, algorithm = "XOR"
       template = ERB.new(File.read("#{__dir__}/../resources/SecretsSwift.erb"))
 
       case @source_type
@@ -16,7 +16,8 @@ module MobileSecrets
         File.open(output_file_path, "w") do |file|
            file.puts template.result_with_hash(secrets_array: secrets_bytes,
               file_names_array: file_names_bytes,
-              should_decrypt_files: file_names_bytes.length > 0)
+              should_decrypt_files: file_names_bytes.length > 0,
+              algorithm: algorithm)
          end
       end
     end

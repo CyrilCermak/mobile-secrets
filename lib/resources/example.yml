@@ -1,17 +1,22 @@
 MobileSecrets:
   # hashKey: Key that will be used to hash the secret values.
   # For encrypting files the key needs to be 32 chars long as an AES standard.
-  hashKey: "KokoBelloKokoKokoBelloKokoKokoBe"
+  # When using alg: "AES-GCM" the key must also be exactly 32 characters.
+  hashKey: "REPLACE_THIS_32_CHAR_HASH_KEY___"
   # shouldIncludePassword: By default the password is saved in the code as a series of bytes, however it can also
   # be fetched from your API, saved in keychain and passed to the Secrets for improving the security.
   shouldIncludePassword: true
   # language: Swift is currently only supported language, Kotlin is coming soon.
   language: "Swift"
+  # alg: The algorithm used to obfuscate secret values. Options: "XOR" (default) or "AES-GCM".
+  # AES-GCM provides authenticated encryption and is stronger than XOR obfuscation.
+  # Note: AES-GCM requires hashKey to be exactly 32 characters and iOS 13+ / macOS 10.15+.
+  alg: "XOR"
   # Key-value dictionary for secrets. The key is then referenced in the code to get the secret.
   secrets:
-    googleMaps: "123123123"
-    firebase: "asdasdasd"
-    amazon: "asd123asd123"
+    googleMaps: "YOUR_GOOGLE_MAPS_KEY"
+    firebase: "YOUR_FIREBASE_KEY"
+    amazon: "YOUR_AMAZON_KEY"
   # Optional, remove files if you do not want to encrypt them
   files:
     - tmp.txt

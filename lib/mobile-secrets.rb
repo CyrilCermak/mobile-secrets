@@ -74,7 +74,7 @@ module MobileSecrets
         MobileSecrets::SourceRenderer.new("swift").render_empty_template "#{file_path}/secrets.swift"
       when "--edit"
         return print_options if argv_1 == nil
-        exec("dotgpg edit #{argv_1}")
+        exec("dotgpg", "edit", argv_1)
       when "--usage"
         puts usage
       else
